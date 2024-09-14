@@ -1,0 +1,161 @@
+Framework: Express.js
+Engine: Node.js
+Database: MySql
+
+Sumber belajar : https://www.youtube.com/watch?v=jBAZPXNQq0Y
+YouTube : prawito hudoro
+
+1. Membuat Server di express js
+ * buat index.js dulu, lalu import express nya
+ * Code : const express = require("express");
+    const app = express();
+
+    app.listen(4000, (req, res) => {
+    console.log("Server is running on port 8000 : http://localhost:8000");
+    });
+
+2. Membuat struktur Project yang baik di express
+ * Folder src yang menampung index.js
+ * Folder Routes : untuk mengumpulkan semua file file yang memilki fungsi routing contoh punya banyak path ada mungkin user, product, sales dan biasanya di
+ pisahkan sesuai routes nya masing masing
+ * Folder Controller : Biasanya sebuah fungsi yang kita gunakan didalam setiap routes nya
+ * Folder Middleware : Akan dibahas dimaateri selanjutnya
+ * Folder Models : Fungsi fungsi yang meng call ke database disimpan di sini
+ * Folder Config : ini adalah untuk setup ke database nya
+ * Folder Utils : untuk keperluan fungsi bantuan
+ 
+ Setelah membuat folder folder lalu rapihkan
+
+3. Membuat routing di folder Routes
+    Contoh route: 
+    router.get("users", (req, res, next) => {
+    res.json({
+        message: "GET Users Success",
+        code: 200,
+        data: [
+        {
+            id: 1,
+            username: "Yoki Jati Perkasa",
+            email: "yokijati@gmail",
+        },
+        {
+            id: 2,
+            username: "Ervi Delia Putri",
+            email: "adel@gmail.com",
+        },
+        {
+            id: 3,
+            username: "Hehe",
+            email: "heh@gmail.com",
+        },
+        ],
+    });
+    });
+
+    Contoh penerapan di index.js :
+    import dulu
+    const usersRoutes = require("./routes/users.js");
+
+    nah ini menggunakan use karena method use bisa menyimpan get dan post atau put atau delete, karena sudah di grouping jadi gunakan aja use
+    app.use("/users", usersRoutes);
+
+    Karena sudah digrouping jadi di file users.js hapus aja path nya yang asalnya /users jadi / doang
+    
+    Buat Function yang akan digunakan, buat function nya di Controller, dan terapkan di routing
+    Contoh Function di Controler :
+    const createNewUser = (req, res) => {
+    res.json({
+        message: "CREATE Users Success",
+        code: 200,
+        data: {
+        id: 1,
+        username: "Yoki Jati Perkasa",
+        email: "yokijati@gmail",
+        },
+    });
+    };
+
+    Contoh penerapan di Routes:
+    router.post("/", UserController.createNewUser);
+
+    Jadi terlihat lebih rapihkan
+
+4. Middleware (Akan sering digunakan di REST Api)
+    Sebuah fungsi yang mana dia bisa mengakses respon request dan next, didalam fungsi ini karena dia bisa mengakses, maka dia bisa menjalankan fungsi yang kita inginkan
+
+    Middleware bisa digunakan sebagai jembatan atau penghubung dimana Middleware, pasti dilewati ketika request masuk
+    jadi kaya bisa melakukan pengecekan autentikasi, atau json web token 
+
+    Cara pembuatan middleware dalam Express:
+
+    // Middleware
+    app.use((req, res, next) => {
+    console.log("Log Terjadi Request ke API ini: ", Date.now());
+    // Kalau tidak menggunakan Next();
+    // Maka proses nya akan loading terus, karena kita tidak menyuruh si middle ware melanjutkan proses nya
+    next();
+    });
+
+    // Middleware ke 2
+    app.use((req, res, next) => {
+    console.log("Middle Ware ke 2: ", Date.now());
+    next();
+    });
+
+    Alangkah baiknya middleware di pisahkan ke dalam folder middleware lalu panggil aja nanti di index.js
+
+5. CRUD (masih dummy, belum terhubung ke Database)
+    * CREATE tentu kita akan membutuhkan input dari user yang menggunakan API kita
+    Biasa disebut dengan request body, ini berasal dari user dan biasaanya berupa json
+    Jadi kita akan buat middleware, yang mengizinkan request body yang berupa json
+    karena kalo tanpa middleware req body nya gabisa diterima
+    gunakan middleware: app.use(express.json());
+    * READ kita akan membaca atau mengambil data dari database
+    * UPDATE kalo update biasanya membutuhkan id spesifik yang didapat ketika query ke database
+    untuk menggunakan id kita bisanya memasukkan param contohnya path seperti ini 
+    http://localhost:4000/users/:id ini adalah param endpoint nya
+    Gunakan patch misal terdapat 4 atribus user username, email, password, address
+    nak kalo pake patch kita hanya update username dan email saja itu bisa karena kita
+    hanya menginput itu saja
+    * DELETE method ini sama dengan update, jadi membutuhkan paramter yang biasanya id mana yang mau di hapus
+
+6. Create Connection Express to MySql
+
+    Gunakan Connection pool
+    // Create the connection pool. The pool-specific settings are the defaults
+    const dbPool = mysql.createPool({
+      host: 'localhost',
+      user: 'root',
+      password: '',
+      database: 'express_mysql',
+      // waitForConnections: true,
+      // connectionLimit: 10,
+      // maxIdle: 10, // max idle connections, the default value is the same as `connectionLimit`
+      // idleTimeout: 60000, // idle connections timeout, in milliseconds, the default value 60000
+      // queueLimit: 0,
+      // enableKeepAlive: true,
+      // keepAliveInitialDelay: 0,
+    });
+
+    Lalu test koneksi ke mysql
+    Code : // Test koneksi ke mysql
+           app.use("/", (req, res) => {
+             dbPool.execute('SELECT * FROM users', (err, rows) => {
+               if (err) {
+                 res.json({
+                   message: "Connection Failed",
+                 })
+               }
+
+               res.json({
+                 message: "Connection Success",
+                 code: 200,
+                 data: rows
+               })
+             })
+           })
+
+
+7. Refactor MySQL Connection
+
+8. Setup Environment Variables
