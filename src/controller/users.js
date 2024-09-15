@@ -4,14 +4,14 @@ const getAllUsers = async (req, res) => {
     try {
         const [data] = await UsersModel.getAllUsers();
 
-        res.json({
+        res.status(200).json({
             message: "GET Users Success",
             code: 200,
             // bisa di destructuring
             data: data,
         });
     } catch (err) {
-        res.json({
+        res.status(500).json({
             message: "Server Error, HAMPURAAAAAAAA",
             code: 500,
             serverMessage: err
@@ -23,13 +23,12 @@ const createNewUser = async (req, res) => {
     const {body} = req;
     try {
         await UsersModel.createNewUser(body)
-        res.json({
+        res.status(201).json({
             message: "CREATE Users Success",
-            code: 200,
             data: body
         });
     } catch (error) {
-        res.json({
+        res.status(500).json({
             message: "Server Error, HAMPURAAAAAAAA",
             code: 500,
             serverMessage: error
@@ -38,26 +37,49 @@ const createNewUser = async (req, res) => {
 
 };
 
-const updateUser = (req, res) => {
+const updateUser = async (req, res) => {
     // Destructuring req.body
     const {id} = req.params;
-
-    console.log("ID: " + id);
-    res.json({
-        message: "UPDATE Users Success",
-        code: 200,
-        data: req.body,
-    });
+    const {body} = req;
+    try {
+        await UsersModel.updateUser(body, id)
+        res.status(200).json({
+            message: "UPDATE Users Success",
+            code: 200,
+            data: {
+                id: id,
+                // Bodynya di spread biar muncul semuanya
+                ...body
+            }
+        })
+    } catch (error) {
+        res.status(500).json({
+            message: "Server Error, HAMPURAAAAAAAA",
+            code: 500,
+            serverMessage: error
+        })
+    }
 };
 
-const deleteUser = (req, res) => {
+const deleteUser = async (req, res) => {
     const {id} = req.params;
-    res.json({
-        message: "DELETE Users Success",
-        data: {
-            id: id,
-        },
-    });
+    try {
+        await UsersModel.deleteUser(id)
+        res.json({
+            message: "DELETE Users Success",
+            data: {
+                id: id,
+            },
+        });
+    } catch (error) {
+        res.json({
+            message: "Server Error, HAMPURAAAAAAAA",
+            code: 500,
+            serverMessage: error
+        })
+    }
+
+
 };
 
 module.exports = {
