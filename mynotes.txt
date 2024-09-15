@@ -159,3 +159,8 @@ YouTube : prawito hudoro
 7. Refactor MySQL Connection
 
 8. Setup Environment Variables
+    Membuat Environment Variables, install env
+
+9. CRUD to MySQL Database
+    CREATE - POST
+

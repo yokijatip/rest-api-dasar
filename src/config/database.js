@@ -1,10 +1,15 @@
 const mysql = require("mysql2");
 
 const dbPool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'express_mysql',
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+
+    // host: 'localhost',
+    // user: 'root',
+    // password: 'root',
+    // database: 'express_mysql',
     // waitForConnections: true,
     // connectionLimit: 10,
     // maxIdle: 10, // max idle connections, the default value is the same as `connectionLimit`
@@ -13,5 +18,6 @@ const dbPool = mysql.createPool({
     // enableKeepAlive: true,
     // keepAliveInitialDelay: 0,
 });
+
 
 module.exports = dbPool.promise();

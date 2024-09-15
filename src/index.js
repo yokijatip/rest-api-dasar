@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
-const port = 4000;
+require("dotenv").config();
+const PORT = process.env.PORT;
 
 const usersRoutes = require("./routes/users.js");
 const logRequest = require("./middleware/logs.js");
@@ -10,8 +11,8 @@ app.use(logRequest);
 // Middleware untuk mengizinkan request body yang berupa json
 app.use(express.json());
 
-app.listen(port, (req, res) => {
-    console.log("Server is running on port 4000 : http://localhost:4000");
+app.listen(PORT, (req, res) => {
+    console.log(`Server is running on port 4000 : ${PORT}`);
 });
 
 app.get("/home", (req, res) => {
